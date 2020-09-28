@@ -75,7 +75,14 @@ namespace ReadJsonbArraysWithDtoInheritance
   {
     public int Id { get; set; }
     public string Name { get; set; } = "";
-    public IList<Note> Notes { get; } = new List<Note>();
+
+    /// <summary>
+    /// If this is read-only, Dapper will not deserialize the property from DataReader for subclasses,
+    /// e.g <see cref="ProductView"/>. This is because Dapper internally tries to deserialize the compiler-
+    /// generated backing field, which is present only in the base class. When the property is settable
+    /// (even with private setter!), Dapper deserializes it correctly for derived classes also.
+    /// </summary>
+    public IList<Note> Notes { get; private set; } = new List<Note>();
 
     public override string ToString() => $"Product({this.Id}, {this.Name}): " + string.Join(", ", this.Notes);
   }
